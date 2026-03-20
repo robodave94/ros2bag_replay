@@ -11,10 +11,8 @@ Panels:
         - /Depth Image1
         - /TF1
         - /TF1/Frames1
-        - /TF1/Frames1/01
-        - /TF1/Frames1/world1
       Splitter Ratio: 0.5
-    Tree Height: 552
+    Tree Height: 454
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -57,7 +55,7 @@ Visualization Manager:
         Min Value: 0
         Value: true
       Axis: Z
-      CameraInfo Topic: /viewer/depth_info
+      CameraInfo Topic: /device_0/sensor_0/Depth_0/info/camera_info
       Channel Name: intensity
       Class: rviz_default_plugins/DepthCloud
       Color: 255; 255; 255
@@ -78,13 +76,13 @@ Visualization Manager:
         Occlusion Time-Out: 30
         Value: false
       Position Transformer: XYZ
-      Queue Size: 5
+      Queue Size: 10
       Reliability Policy: Best effort
       Selectable: true
       Size (Pixels): 3
       Style: Points
       Topic Filter: true
-      Use Fixed Frame: false
+      Use Fixed Frame: true
       Use rainbow: true
       Value: true
     - Class: rviz_default_plugins/Image
@@ -126,7 +124,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: world
+    Fixed Frame: 0
     Frame Rate: 30
   Name: root
   Tools:
@@ -144,41 +142,41 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 19.844867706298828
+      Distance: 15.07896614074707
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 1.5
+        X: -3.596510648727417
+        Y: 4.3648681640625
+        Z: -1.4573101997375488
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5199999213218689
+      Pitch: 0.2749999165534973
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.571588039398193
+      Yaw: 5.224772930145264
     Saved: ~
 Window Geometry:
   Depth Image:
     collapsed: false
   Displays:
     collapsed: false
-  Height: 999
+  Height: 853
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000001000000000000023d00000391fc0200000005fb000000160044006500700074006800200049006d006100670065010000003b000001280000001600fffffffb000000100044006900730070006c006100790073010000016900000263000000c700fffffffb0000001200530065006c0065006300740069006f006e00000002050000005c0000005c00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000244000000690000005c00fffffffb0000000a005600690065007700730000000296000000d3000000a000ffffff000005310000039100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000001000000000000023d000002fffc0200000005fb000000160044006500700074006800200049006d006100670065010000003b000000f80000001600fffffffb000000100044006900730070006c006100790073010000013900000201000000c700fffffffb0000001200530065006c0065006300740069006f006e00000002050000005c0000005c00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000244000000690000005c00fffffffb0000000a005600690065007700730000000296000000d3000000a000ffffff00000532000002ff00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Tool Properties:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1908
-  X: 0
-  Y: 0
+  Width: 1909
+  X: 1103
+  Y: 105

@@ -66,10 +66,13 @@ class CameraInfoFixerNode : public rclcpp::Node {
     frame_id_ = get_parameter("frame_id").as_string();
 
     // ── QoS profiles ───────────────────────────────────────────────────────
-    // TRANSIENT_LOCAL / RELIABLE: bag player republishes the one latched
-    // CameraInfo at connection time, so we catch it even if subscribed late.
-    rclcpp::QoS latch_qos(rclcpp::KeepLast(1));
-    latch_qos.transient_local().reliable();
+    // VOLATILE / RELIABLE: bags recorded with rosbags (or similar converters)
+    // store no QoS profile, so ros2 bag play defaults to VOLATILE/RELIABLE.
+    // A TRANSIENT_LOCAL subscriber is incompatible with a VOLATILE publisher,
+    // so we use VOLATILE here to guarantee we receive the message.
+    // With --loop the single CameraInfo is replayed each loop iteration.
+    rclcpp::QoS ci_sub_qos(rclcpp::KeepLast(10));
+    ci_sub_qos.reliable().durability_volatile();
 
     // VOLATILE / BEST_EFFORT: matches the typical QoS of bag-replayed images.
     rclcpp::QoS img_qos(rclcpp::KeepLast(5));
@@ -78,7 +81,7 @@ class CameraInfoFixerNode : public rclcpp::Node {
     // ── Subscriptions ──────────────────────────────────────────────────────
     ci_sub_ = create_subscription<CameraInfo>(
         ci_in,
-        latch_qos,
+        ci_sub_qos,
         [this](const CameraInfo::SharedPtr msg) {
           latched_info_ = msg;
           RCLCPP_INFO_ONCE(get_logger(), "CameraInfo received and latched.");
@@ -90,7 +93,10 @@ class CameraInfoFixerNode : public rclcpp::Node {
         [this](const Image::SharedPtr msg) { onImage(msg); });
 
     // ── Publisher ──────────────────────────────────────────────────────────
-    ci_pub_ = create_publisher<CameraInfo>(ci_out, latch_qos);
+    // Publish as TRANSIENT_LOCAL so RViz receives it even if it connects late.
+    rclcpp::QoS pub_qos(rclcpp::KeepLast(1));
+    pub_qos.transient_local().reliable();
+    ci_pub_ = create_publisher<CameraInfo>(ci_out, pub_qos);
 
     RCLCPP_INFO(get_logger(),
                 "camera_info_fixer: %s + %s -> %s (frame_id='%s')",
