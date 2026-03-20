@@ -116,6 +116,30 @@ class CameraInfoFixerNode : public rclcpp::Node {
     CameraInfo out = *latched_info_;
     out.header.stamp    = img_msg->header.stamp;
     out.header.frame_id = frame_id_;
+
+    // Some bags (e.g. recorded with the rosbags library) store a valid K
+    // matrix but leave P and R zeroed out.  RViz2 DepthCloud uses P[0],
+    // P[2], P[5], P[6] as fx/cx/fy/cy for back-projection; zeros make every
+    // point land at the origin.  Derive P and R from K when they are empty.
+    const bool p_empty = std::all_of(out.p.begin(), out.p.end(),
+                                     [](double v){ return v == 0.0; });
+    if (p_empty && out.k[0] != 0.0) {
+      // P = [fx  0  cx  0]
+      //     [ 0 fy  cy  0]
+      //     [ 0  0   1  0]
+      out.p[0]  = out.k[0];   // fx
+      out.p[2]  = out.k[2];   // cx
+      out.p[5]  = out.k[4];   // fy
+      out.p[6]  = out.k[5];   // cy
+      out.p[10] = 1.0;
+    }
+
+    const bool r_empty = std::all_of(out.r.begin(), out.r.end(),
+                                     [](double v){ return v == 0.0; });
+    if (r_empty) {
+      out.r[0] = 1.0;  out.r[4] = 1.0;  out.r[8] = 1.0;  // identity
+    }
+
     ci_pub_->publish(out);
   }
 

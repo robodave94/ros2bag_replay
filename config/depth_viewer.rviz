@@ -55,7 +55,7 @@ Visualization Manager:
         Min Value: 0
         Value: true
       Axis: Z
-      CameraInfo Topic: /device_0/sensor_0/Depth_0/info/camera_info
+      CameraInfo Topic: /viewer/depth_info
       Channel Name: intensity
       Class: rviz_default_plugins/DepthCloud
       Color: 255; 255; 255
@@ -76,7 +76,7 @@ Visualization Manager:
         Occlusion Time-Out: 30
         Value: false
       Position Transformer: XYZ
-      Queue Size: 10
+      Queue Size: 1
       Reliability Policy: Best effort
       Selectable: true
       Size (Pixels): 3
