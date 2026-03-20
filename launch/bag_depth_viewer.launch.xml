@@ -1,0 +1,90 @@
+<launch>
+  <!-- bag_depth_viewer.launch.xml -->
+  <!-- Plays a ROS 2 bag on loop and optionally visualises the depth stream -->
+  <!-- in RViz2. A camera_info_fixer_node corrects the bag CameraInfo header -->
+  <!-- (stamp and frame_id) so RViz2 DepthCloud can sync the topics. -->
+
+  <!-- Usage (Sophia / RealSense example bag): -->
+  <!--   ros2 launch ros2bag_replay bag_depth_viewer.launch.xml \ -->
+  <!--     bag_path:=some_test_data/sophia_dataset_example/data/cameras/realsense_front_side_ros2 -->
+
+  <!-- To suppress RViz2 (headless / CI use): -->
+  <!--   ros2 launch ros2bag_replay bag_depth_viewer.launch.xml \ -->
+  <!--     bag_path:=/path/to/bag use_rviz:=false -->
+
+  <!-- Override any topic or frame as needed: -->
+  <!--   ros2 launch ros2bag_replay bag_depth_viewer.launch.xml \ -->
+  <!--     bag_path:=/path/to/bag \ -->
+  <!--     depth_topic:=/my/depth/image \ -->
+  <!--     image_topic:=/my/color/image \ -->
+  <!--     depth_camera_info_topic:=/my/depth/camera_info \ -->
+  <!--     camera_frame:=my_camera_optical_frame \ -->
+  <!--     use_rviz:=true -->
+
+  <!-- ── Required argument ──────────────────────────────────────────── -->
+  <arg name="bag_path"
+       description="Path to the ROS 2 bag directory or .db3 file to play."/>
+
+  <!-- ── Topic names ────────────────────────────────────────────────── -->
+  <!-- Default values match the RealSense bag recorded in the -->
+  <!-- sophia_dataset_example (device_0 / sensor_0 convention). -->
+  <arg name="depth_topic"
+       default="/device_0/sensor_0/Depth_0/image/data"
+       description="Depth image topic (sensor_msgs/Image, 32FC1 or 16UC1)."/>
+  <arg name="image_topic"
+       default="/device_0/sensor_1/Color_0/image/data"
+       description="RGB/colour image topic (sensor_msgs/Image)."/>
+  <arg name="depth_camera_info_topic"
+       default="/device_0/sensor_0/Depth_0/info/camera_info"
+       description="Depth camera intrinsics topic (sensor_msgs/CameraInfo)."/>
+
+  <!-- ── Camera frame ───────────────────────────────────────────────── -->
+  <!-- Must match the frame_id published in the depth image header. -->
+  <!-- In the RealSense bag the depth sensor publishes with frame_id "0". -->
+  <!-- RViz2 Fixed Frame is set to "world"; a static TF is broadcast below. -->
+  <arg name="camera_frame"
+       default="0"
+       description="TF frame of the depth sensor (must match image header.frame_id)."/>
+
+  <!-- ── RViz2 toggle ───────────────────────────────────────────────── -->
+  <!-- Set use_rviz:=false for headless / CI environments. -->
+  <arg name="use_rviz"
+       default="true"
+       description="Launch RViz2 with the depth viewer configuration (true/false)."/>
+
+  <!-- ── Static TF: world → camera_frame ───────────────────────────── -->
+  <!-- The bag contains no TF tree. Broadcasting an identity transform -->
+  <!-- from 'world' to the camera frame lets RViz2 resolve the frame -->
+  <!-- and display the depth cloud correctly on the grid. -->
+  <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_tf"
+        args="--x 0 --y 0 --z 0 --roll 0 --pitch 0 --yaw 0 --frame-id world --child-frame-id $(var camera_frame)"/>
+
+  <!-- ── Rosbag player ──────────────────────────────────────────────── -->
+  <!-- Plays the bag on a continuous loop so visualisation and downstream -->
+  <!-- nodes receive an uninterrupted data stream. -->
+  <executable
+    cmd="ros2 bag play $(var bag_path) --loop"
+    output="screen"
+    name="rosbag_player"/>
+
+  <!-- ── CameraInfo fixer ───────────────────────────────────────────── -->
+  <!-- Many bags record CameraInfo with a zero timestamp and empty -->
+  <!-- frame_id. This node latches the CameraInfo, then re-stamps it from -->
+  <!-- each incoming depth image and injects the correct frame_id so that -->
+  <!-- RViz2 DepthCloud can time-sync the two topics. -->
+  <node pkg="ros2bag_replay" exec="camera_info_fixer_node" name="camera_info_fixer"
+        output="screen">
+    <param name="camera_info_in"  value="$(var depth_camera_info_topic)"/>
+    <param name="depth_image_in"  value="$(var depth_topic)"/>
+    <param name="camera_info_out" value="/viewer/depth_info"/>
+    <param name="frame_id"        value="$(var camera_frame)"/>
+  </node>
+
+  <!-- ── RViz2 ──────────────────────────────────────────────────────── -->
+  <!-- Opens with depth_viewer.rviz pre-configured with Depth Cloud and -->
+  <!-- Depth Image displays. Suppressed when use_rviz:=false. -->
+  <node pkg="rviz2" exec="rviz2" name="rviz2" output="screen"
+        if="$(var use_rviz)"
+        args="-d $(find-pkg-share ros2bag_replay)/config/depth_viewer.rviz"/>
+
+</launch>

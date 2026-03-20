@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd"
+            schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ros2bag_replay</name>
+  <version>0.1.0</version>
+  <description>
+    ROS 2 package for replaying camera bag data for early-stage development
+    and testing of ROS 2 systems without physical sensors.
+
+    Provides a camera_info_fixer_node that corrects header timestamps and
+    frame_ids in CameraInfo messages recorded in bags where these fields were
+    empty or zero — a common issue with RealSense bags. A launch file with an
+    optional RViz2 visualisation is included.
+  </description>
+
+  <maintainer email="todo@example.com">robodave94</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2_ros</depend>
+
+  <exec_depend>rviz2</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
