@@ -52,7 +52,7 @@
   <!-- 0.3 targets ~30 fps which is comfortable for real-time viewing.   -->
   <!-- Increase toward 1.0 on faster machines or decrease for slower.    -->
   <arg name="playback_rate"
-       default="1"
+       default="0.45"
        description="Bag playback speed multiplier (0.3 → ~30 fps from a 90 fps bag)."/>
 
   <!-- ── RViz2 toggle ───────────────────────────────────────────────── -->
