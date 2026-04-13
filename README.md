@@ -67,6 +67,11 @@ source install/setup.bash
 | Frame ID     | `"0"` (depth sensor header)                                             |
 | Notes        | CameraInfo has zero timestamp — `camera_info_fixer_node` corrects this  |
 
+Download the link
+```
+wget https://link.storjshare.io/raw/junzratprhzvlutlfylgj2qjvlvq/robodave94-dev/realsense_front_side_ros2.tar.gz
+```
+
 ---
 
 ## Launch: `bag_depth_viewer.launch.xml`
